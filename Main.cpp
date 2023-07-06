@@ -1,6 +1,7 @@
 ﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.10
 
 std::vector<std::vector<int>> status(8, std::vector<int>(8));	//マスの状態:0.なし，1.黒，2.白
+bool color = true;	//true.黒，false.白
 
 //盤上のマス目，背景などの設定
 void setup() {
@@ -22,11 +23,26 @@ void setup() {
 	}
 }
 
+void reset() {
+	//マスをすべて0
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			status[i][j] = 0;
+		}
+	}
+	//初期配置の設定
+	status.at(3).at(3) = 1;
+	status.at(4).at(4) = 1;
+	status.at(3).at(4) = 2;
+	status.at(4).at(3) = 2;
+
+	color = true;
+}
+
 void Main()
 {
 	int x = 0;
 	int y = 0;
-	bool color = true;	//true.黒，false.白
 	bool end_flag = false; //ゲームオーバーを確認
 
 	// 基本サイズ 30 のフォントを作成
@@ -34,12 +50,7 @@ void Main()
 
 	const double hue = (Scene::Time() * 60);
 
-	//初期配置の設定
-	status.at(3).at(3) = 1;
-	status.at(4).at(4) = 1;
-	status.at(3).at(4) = 2;
-	status.at(4).at(3) = 2;
-
+	reset();
 
 	while (System::Update())
 	{
@@ -83,6 +94,18 @@ void Main()
 		//選択マスの表示
 		Circle{ 182 + x * 63, 82 + y * 63,30 }.drawFrame(5, Palette::Green);
 
+		// "Licenses" ボタンが押されたら
+		if (SimpleGUI::Button(U"Licenses", Vec2{ 670, 20 }))
+		{
+			// ライセンス情報を表示
+			LicenseManager::ShowInBrowser();
+		}
+		// "Reset" ボタンが押されたら
+		if (SimpleGUI::Button(U"Reset", Vec2{ 670, 70 }))
+		{
+			// 盤面のリセット
+			reset();
+		}
 
 		//マスの選択
 		//右移動
